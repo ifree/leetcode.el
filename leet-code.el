@@ -32,7 +32,6 @@
     (insert-file-contents file)
     (buffer-string)))
 
-
 ;;; evulate this in firefox's developer tool to get latest problem lists.
 ;;;$x("//table[@id='problemList']/tbody/tr/td[2]/text()|//td[3]/a/text()|//td[5]/text()").reverse().map(function(e, i){return ["(\"[{0}]", "{1}\"", "{2})\n"][i % 3].replace("{"+ i % 3 +"}", e.nodeValue);}).join(" ")
 (defconst leet-code-quests '(
@@ -462,7 +461,7 @@
       (newline)
       (shr-render-region start end)
       (comment-region start (point))
-      (fill-region start (point))
+;      (fill-region start (point))
       (when (y-or-n-p "insert code template? ")
         (insert (leet-code--parse-code data))
         (newline)
