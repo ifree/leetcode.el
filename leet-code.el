@@ -32,6 +32,7 @@
     (16 "IE" )
     (20 "CE" )
     (21 "UE" )))
+(defvar leet-code-default-lang "cpp" "Your prefered programming language.")
 
 (defvar *leet-code-last-submission-id* nil)
 
@@ -323,7 +324,7 @@
 
 
 (defun* leet-code--submit
-    (content &optional qname qid &key (type "large") (lang "cpp"))  
+    (content &optional qname qid &key (type "large") (lang leet-code-default-lang))
   (assert (leet-code--is-loggedin) t "login first")
   (unless (and qname qid)
     (let ((quest
@@ -401,7 +402,7 @@
 (defun leet-code--parse-code (raw-content)
   (let ((re
          ;; I don't want to do this... but they don't provide me some API
-         "<div\s*?class=\"col-md-12\"\s*?ng-init=\"init(\\(.*\\),\s*?'\\w+');\">"
+         "acectrl.init(\r?\n?\s*\\(\\[.*,\\]\\),"
          )
         code-str
         code-obj)
@@ -414,25 +415,16 @@
       (goto-char 0)
       (setq code-obj (json-read))
       )
-    (when (not (stringp code-obj))      ;no error thrown and result isn't str.
-      (let ((cpp-entry                  ;why hard code? java devs use emacs are
-                                        ;rarely, if you want other lang, send me
-                                        ;PR or raise a issue. 
+    (when (not (stringp code-obj))
+      (let ((cpp-entry            
              (car (delq nil
                         (mapcar (lambda (entry)
                                   (and
-                                   (string= (cdr (assoc 'value entry)) "cpp" )
+                                   (string= (cdr (assoc 'value entry)) leet-code-default-lang)
                                    entry)) code-obj)))))
         (cdr
          (assoc 'defaultCode cpp-entry))))))
 
-(defun leet-code--parse-info (raw-content)
-  (substring-no-properties
-   raw-content
-   (string-match "<div\s?class=\"question-content\">" raw-content) ;malformatted
-                                        ;html? it's
-                                        ;ok to libxml
-   (string-match "<div\s?id=\"tags\"\s?" raw-content)))
 
 (defun leet-code--parse-info (raw-content)
   "Parse html RAW-CONTENT get info."
